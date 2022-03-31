@@ -38,6 +38,7 @@ public class SpiderManager {
     }
 
     private List<String> getNewPagesToCrawlFromCrawlResultQueue() throws ExecutionException, InterruptedException, TimeoutException {
+        // We wait a maximum of 10 seconds to get the result of a crawl
         return Objects.requireNonNull(pendingCrawlTaskResults.poll())
                 .get(10, TimeUnit.SECONDS)
                 .getLinksFound();

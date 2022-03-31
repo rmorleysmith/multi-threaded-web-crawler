@@ -66,9 +66,11 @@ public class RobotRulesManager {
         HttpResponse response = httpClient.execute(httpGet, context);
 
         if (response.getStatusLine() != null && response.getStatusLine().getStatusCode() == 404) {
+            // Free resources and return default rules
             EntityUtils.consumeQuietly(response.getEntity());
             return getDefaultRobotRules();
         } else {
+            // Parse rules from robots.txt
             BufferedHttpEntity entity = new BufferedHttpEntity(response.getEntity());
             return parseRobotRulesFromByteArray(host, IOUtils.toByteArray(entity.getContent()));
         }

@@ -41,6 +41,7 @@ public class SpiderWorker implements Callable<CrawlResult> {
     }
 
     private Document getHTMLDocument(String pageURL) throws IOException, IllegalArgumentException {
+        // Connect to the URL and parse the HTML document
         return Jsoup.connect(pageURL).userAgent(USER_AGENT).get();
     }
 
