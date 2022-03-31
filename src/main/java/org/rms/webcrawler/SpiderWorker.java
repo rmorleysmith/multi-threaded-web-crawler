@@ -6,6 +6,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +43,8 @@ public class SpiderWorker implements Callable<CrawlResult> {
 
     private Document getHTMLDocument(String pageURL) throws IOException, IllegalArgumentException {
         // Connect to the URL and parse the HTML document
-        return Jsoup.connect(pageURL).userAgent(USER_AGENT).get();
+        // We wait a maximum of 10 seconds before timing out
+        return Jsoup.connect(pageURL).timeout(10 * 1000).userAgent(USER_AGENT).get();
     }
 
     private void performCrawlTasks() {
