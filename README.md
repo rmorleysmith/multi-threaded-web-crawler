@@ -60,7 +60,7 @@ This can cause us to go down a rabbit hole in terms of crawling a website we're 
 I have used the ExecutorService to handle multi-threading in this application. 
   
 The way it works is that the SpiderManager submits an initial crawl task to the service, with the work to be done by a SpiderWorker.
-The SpiderManager then poll()'s the queue to get back new links from the seed page that the SpiderWorker has crawled.
+The SpiderManager then pollFirst()'s the queue to get back new links from the seed page that the SpiderWorker has crawled.
 Then it submits new tasks for other SpiderWorkers to the end of the queue. These tasks are picked up as threads become
 available, up to the maximum amount of threads.  
   
