@@ -1,14 +1,23 @@
 package org.rms.webcrawler;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class SpiderManager {
 
     private static final Integer MAX_THREADS = 10;
 
     private final ExecutorService spiderExecutor = Executors.newFixedThreadPool(MAX_THREADS);
-    private final Queue<Future<CrawlResult>> pendingCrawlTaskResults = new ArrayDeque<>();
+    private final Deque<Future<CrawlResult>> pendingCrawlTaskResults = new ArrayDeque<>();
     private final Set<String> pagesCrawledOrQueued = new HashSet<>();
     private final RobotRulesManager robotRulesManager = new RobotRulesManager();
 
@@ -37,15 +46,15 @@ public class SpiderManager {
         spiderExecutor.shutdown();
     }
 
-    private List<String> getNewPagesToCrawlFromCrawlResultQueue() throws ExecutionException, InterruptedException, TimeoutException {
+    private Deque<String> getNewPagesToCrawlFromCrawlResultQueue() throws ExecutionException, InterruptedException, TimeoutException {
         // We wait a maximum of 10 seconds to get the result of a crawl
-        return Objects.requireNonNull(pendingCrawlTaskResults.poll())
+        return Objects.requireNonNull(pendingCrawlTaskResults.pollFirst())
                 .get(10, TimeUnit.SECONDS)
                 .getLinksFound();
     }
 
-    private void queueNewPagesToCrawlIfAllowed(List<String> listOfPages) {
-        listOfPages.forEach(this::queuePageToCrawlIfAllowed);
+    private void queueNewPagesToCrawlIfAllowed(Deque<String> queueOfPages) {
+        queueOfPages.forEach(this::queuePageToCrawlIfAllowed);
     }
 
     private void queuePageToCrawlIfAllowed(String link) {
@@ -68,7 +77,7 @@ public class SpiderManager {
     private void queuePageToCrawl(String link) {
         try {
             pagesCrawledOrQueued.add(link);
-            pendingCrawlTaskResults.add(spiderExecutor.submit(new SpiderWorker(link)));
+            pendingCrawlTaskResults.addLast(spiderExecutor.submit(new SpiderWorker(link)));
         } catch (Exception e) {
             System.out.printf("Exception occurred while attempting to submit URL '%s' to crawl queue", link);
         }

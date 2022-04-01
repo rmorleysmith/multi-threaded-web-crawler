@@ -1,17 +1,17 @@
 package org.rms.webcrawler;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public class CrawlResult {
 
-    public final List<String> linksFound = new ArrayList<>();
+    private final Deque<String> linksFound = new ArrayDeque<>();
 
     public void addLinkFound(String link) {
-        linksFound.add(link);
+        linksFound.addLast(link);
     }
 
-    public List<String> getLinksFound() {
+    public Deque<String> getLinksFound() {
         return this.linksFound;
     }
 

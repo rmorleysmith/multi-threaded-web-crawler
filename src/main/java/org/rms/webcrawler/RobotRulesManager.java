@@ -5,6 +5,8 @@ import crawlercommons.robots.SimpleRobotRulesParser;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.impl.client.HttpClients;
@@ -46,21 +48,22 @@ public class RobotRulesManager {
     }
 
     private SimpleRobotRules fetchRobotRulesForHost(String host) {
-        SimpleRobotRules rules;
-
-        try {
-            rules = getRulesViaHttp(host);
-        } catch (IOException e) {
-            rules = getDefaultRobotRules();
-        }
-
+        SimpleRobotRules rules = tryGetRulesViaHttp(host).orElseGet(this::getDefaultRobotRules);
         robotRulesMap.put(host, rules);
 
         return rules;
     }
 
+    private Optional<SimpleRobotRules> tryGetRulesViaHttp(String host) {
+        try {
+            return Optional.of(getRulesViaHttp(host));
+        } catch (IOException e) {
+            return Optional.empty();
+        }
+    }
+
     private SimpleRobotRules getRulesViaHttp(String host) throws IOException {
-        HttpClient httpClient = HttpClients.createDefault();
+        HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(getDefaultRequestConfig()).build();
         HttpGet httpGet = new HttpGet("https://" + host + "/robots.txt");
         HttpContext context = new BasicHttpContext();
         HttpResponse response = httpClient.execute(httpGet, context);
@@ -74,6 +77,10 @@ public class RobotRulesManager {
             BufferedHttpEntity entity = new BufferedHttpEntity(response.getEntity());
             return parseRobotRulesFromByteArray(host, IOUtils.toByteArray(entity.getContent()));
         }
+    }
+
+    private RequestConfig getDefaultRequestConfig() {
+        return RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();
     }
 
     private SimpleRobotRules getDefaultRobotRules() {

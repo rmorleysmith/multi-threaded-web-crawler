@@ -57,19 +57,23 @@ public class WebCrawlerTest {
     public void testPageWithMultipleLinks_PrintsMetaDescription_SavesAllLinks() {
         SpiderWorker spiderWorker = new SpiderWorker(PAGE_WITH_MULTIPLE_LINKS);
         CrawlResult crawlResult = spiderWorker.call();
-        Assert.assertEquals("Page With Multiple Links - A page with multiple links\r\n", systemOutRule.getLog());
+        Assert.assertEquals("Page With Multiple Links - A page with multiple links\n",
+                systemOutRule.getLogWithNormalizedLineSeparator()
+        );
         Assert.assertEquals(4, crawlResult.getLinksFound().size());
-        Assert.assertEquals(PAGE_WITH_MULTIPLE_LINKS, crawlResult.getLinksFound().get(0));
-        Assert.assertEquals(PAGE_WITH_NO_LINKS, crawlResult.getLinksFound().get(1));
-        Assert.assertEquals(PAGE_WITH_NO_LINKS, crawlResult.getLinksFound().get(2));
-        Assert.assertEquals(PAGE_WITH_NO_META_DESCRIPTION, crawlResult.getLinksFound().get(3));
+        Assert.assertEquals(PAGE_WITH_MULTIPLE_LINKS, crawlResult.getLinksFound().pollFirst());
+        Assert.assertEquals(PAGE_WITH_NO_LINKS, crawlResult.getLinksFound().pollFirst());
+        Assert.assertEquals(PAGE_WITH_NO_LINKS, crawlResult.getLinksFound().pollFirst());
+        Assert.assertEquals(PAGE_WITH_NO_META_DESCRIPTION, crawlResult.getLinksFound().pollFirst());
     }
 
     @Test
     public void testPageWithNoMetaDescriptionAndLinks_PrintsDefaultMetaDescription_FindsNoLinks() {
         SpiderWorker spiderWorker = new SpiderWorker(PAGE_WITH_NO_META_DESCRIPTION);
         CrawlResult crawlResult = spiderWorker.call();
-        Assert.assertEquals("Page With No Meta Description - No meta description found\r\n", systemOutRule.getLog());
+        Assert.assertEquals("Page With No Meta Description - No meta description found\n",
+                systemOutRule.getLogWithNormalizedLineSeparator()
+        );
         Assert.assertEquals(0, crawlResult.getLinksFound().size());
     }
 
@@ -77,14 +81,18 @@ public class WebCrawlerTest {
     public void testInvalidURL_PrintsWarning() {
         SpiderWorker spiderWorker = new SpiderWorker(INVALID_URL);
         spiderWorker.call();
-        Assert.assertEquals(String.format("URL %s is not valid, please enter a valid URL\r\n", INVALID_URL), systemOutRule.getLog());
+        Assert.assertEquals(String.format("URL %s is not valid, please enter a valid URL\n", INVALID_URL),
+                systemOutRule.getLogWithNormalizedLineSeparator()
+        );
     }
 
     @Test
     public void testInaccessibleURL_PrintsWarning() {
         SpiderWorker spiderWorker = new SpiderWorker(PAGE_GIVES_404_STATUS);
         spiderWorker.call();
-        Assert.assertEquals(String.format("Failed to get HTML document for URL: %s\r\n", PAGE_GIVES_404_STATUS), systemOutRule.getLog());
+        Assert.assertEquals(String.format("Failed to get HTML document for URL: %s\n", PAGE_GIVES_404_STATUS),
+                systemOutRule.getLogWithNormalizedLineSeparator()
+        );
     }
 
     @Test
@@ -111,7 +119,7 @@ public class WebCrawlerTest {
     @Test
     public void testCrawlZeroPages_DoesNotCrawl() {
         WebCrawler.main(new String[]{PAGE_WITH_MULTIPLE_LINKS, "0"});
-        Assert.assertEquals("", systemOutRule.getLog());
+        Assert.assertEquals("", systemOutRule.getLogWithNormalizedLineSeparator());
     }
 
     @Test
@@ -131,8 +139,8 @@ public class WebCrawlerTest {
     public void testWrongAmountOfArgsGivesError() {
         WebCrawler.main(new String[]{"arg1", "arg2", "arg3"});
         Assert.assertEquals(
-                "Please enter two arguments, a seed URL and the maximum number of pages to crawl\r\n",
-                systemOutRule.getLog()
+                "Please enter two arguments, a seed URL and the maximum number of pages to crawl\n",
+                systemOutRule.getLogWithNormalizedLineSeparator()
         );
     }
 
@@ -140,8 +148,8 @@ public class WebCrawlerTest {
     public void testInvalidURLGivesError() {
         WebCrawler.main(new String[]{INVALID_URL, "100"});
         Assert.assertEquals(
-                String.format("URL %s is invalid, please enter a valid URL and try again\r\n", INVALID_URL),
-                systemOutRule.getLog()
+                String.format("URL %s is invalid, please enter a valid URL and try again\n", INVALID_URL),
+                systemOutRule.getLogWithNormalizedLineSeparator()
         );
     }
 
@@ -149,13 +157,13 @@ public class WebCrawlerTest {
     public void testInvalidNumberGivesError() {
         WebCrawler.main(new String[]{PAGE_WITH_MULTIPLE_LINKS, "InvalidNumber"});
         Assert.assertEquals(
-                "Max pages to crawl is not an integer, please enter a valid integer\r\n",
-                systemOutRule.getLog()
+                "Max pages to crawl is not an integer, please enter a valid integer\n",
+                systemOutRule.getLogWithNormalizedLineSeparator()
         );
     }
 
     private List<String> convertConsoleOutputToListOfLines() {
-        return Arrays.asList(systemOutRule.getLog().split("\r\n"));
+        return Arrays.asList(systemOutRule.getLogWithNormalizedLineSeparator().split("\n"));
     }
 
 }
