@@ -2,7 +2,7 @@ name: Auto-assign
 
 on:
   issues:
-    types: [moved]
+    types: [updated]
 
 jobs:
   assign-on-status-change:
