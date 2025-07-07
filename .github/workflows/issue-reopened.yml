@@ -12,7 +12,8 @@ jobs:
       RELEASE_PROJECT_ID: "PVT_kwHOAnbWOs4A9S3k"
       BACKLOG_PROJECT_ID: "PVT_kwHOAnbWOs4A9S5"
       BACKLOG_NEEDS_TRIAGE_ID: "f75ad846"
-      STATUS_FIELD_ID: "PVTSSF_lAHOAnbWOs4A9S52zgxChRE"
+      BACKLOG_STATUS_FIELD_ID: "PVTSSF_lAHOAnbWOs4A9S52zgxChRE"
+      RELEASE_STATUS_FIELD_ID: "PVTSSF_lAHOAnbWOs4A9S3kzgxCfsA"
       IN_PROGRESS_OPTION_ID: "47fc9ee4"
 
     steps:
@@ -70,7 +71,7 @@ jobs:
               `, {
                 projectId: process.env.BACKLOG_PROJECT_ID,
                 itemId,
-                fieldId: process.env.STATUS_FIELD_ID,
+                fieldId: process.env.BACKLOG_STATUS_FIELD_ID,
                 optionId: process.env.BACKLOG_NEEDS_TRIAGE_ID
               });
 
@@ -111,7 +112,7 @@ jobs:
               `, {
                 projectId: process.env.RELEASE_PROJECT_ID,
                 itemId: item.id,
-                fieldId: process.env.STATUS_FIELD_ID,
+                fieldId: process.env.RELEASE_STATUS_FIELD_ID,
                 optionId: process.env.IN_PROGRESS_OPTION_ID
               });
             }
