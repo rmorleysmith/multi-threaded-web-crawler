@@ -3,7 +3,7 @@ name: Auto-assign
 on:
   workflow_dispatch:
   issues:
-    types: [edited]
+    types: [moved]
 
 jobs:
   assign-on-status-change:
