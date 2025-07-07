@@ -1,7 +1,6 @@
 name: Auto-assign
 
 on:
-  workflow_dispatch:
   issues:
     types: [moved]
 
